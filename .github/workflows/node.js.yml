@@ -25,28 +25,32 @@ jobs:
       run: npm ci
     - name: Build for production
       run: npm run build --if-present
-    - uses: jwsi/secret-parser@v1
     - name: Get DBUSER for config
+      uses: jwsi/secret-parser@v1
       with:
         filename: ecosystem.config.js
         secret-name: secret_DBUSER
         secret-value: ${{ secrets.DBUSER }}
     - name: Get DBPASSWORD for config
+      uses: jwsi/secret-parser@v1
       with:
         filename: ecosystem.config.js
         secret-name: secret_DBPASSWORD
         secret-value: ${{ secrets.DBPASSWORD }}
     - name: Get DBURL for config
+      uses: jwsi/secret-parser@v1
       with:
         filename: ecosystem.config.js
         secret-name: secret_DBURL
         secret-value: ${{ secrets.DBURL }}
     - name: Get DBPORT for config
+      uses: jwsi/secret-parser@v1
       with:
         filename: ecosystem.config.js
         secret-name: secret_DBPORT
         secret-value: ${{ secrets.DBPORT }}
     - name: Get DBNAME for config
+      uses: jwsi/secret-parser@v1
       with:
         filename: ecosystem.config.js
         secret-name: secret_DBNAME
