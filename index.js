@@ -54,7 +54,7 @@ const resolvers = {
         posts: (parent, args, context, info) =>
             new Promise((resolve, reject) =>
                 Post.find()
-                    .skip(args.first ?? 0)
+                    .skip(args.first == null ? args.first : 0)
                     .limit(args.limit)
                     .lean()
                     .exec((error, doc) => {
@@ -66,7 +66,7 @@ const resolvers = {
         portfolioApplications: (parent, args, context, info) =>
             new Promise((resolve, reject) =>
                 PortfolioApplication.find({})
-                    .skip(args.skip ?? 0)
+                    .skip(args.skip == null ? args.skip : 0)
                     .limit(args.limit)
                     .lean()
                     .exec((error, doc) => {
@@ -91,7 +91,7 @@ const resolvers = {
 
 const server = new ApolloServer({ typeDefs, resolvers });
 
-const connectionString =`mongodb://${process.env.DBUSER}:${process.env.DBPASSWORD}@${process.env.DBURL}:${process.env.DBPORT}/${process.env.DBNAME}`
+const connectionString = `mongodb://${process.env.DBUSER}:${process.env.DBPASSWORD}@${process.env.DBURL}:${process.env.DBPORT}/${process.env.DBNAME}`
 
 console.log(connectionString)
 
