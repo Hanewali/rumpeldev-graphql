@@ -25,8 +25,12 @@ jobs:
       run: npm ci
     - name: Build for production
       run: npm run build --if-present
-    - name: Get DBUSER for config
+    - name: Prepare config file
       run: sed -i 's/secret_DBUSER/${{ secrets.DBUSER }}/' ecosystem.config.js
+    - run: sed -i 's/secret_DBPASSWORD/${{ secrets.DBPASSWORD }}/' ecosystem.config.js
+    - run: sed -i 's/secret_DBURL/${{ secrets.DBURL }}/' ecosystem.config.js
+    - run: sed -i 's/secret_DBPORT/${{ secrets.DBPORT }}/' ecosystem.config.js
+    - run: sed -i 's/secret_DBNAME/${{ secrets.DBNAME }}/' ecosystem.config.js
     - name: Deploy to Mikrus
       uses: up9cloud/action-rsync@v1.3
       env:
