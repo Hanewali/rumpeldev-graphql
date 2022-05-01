@@ -31,7 +31,6 @@ const PostSchema = new Schema(
         _id: mongoose.Schema.Types.ObjectId,
         title: String,
         content: String,
-        imageUrl: String,
         contentSummary: String,
         authorName: String
     }
