@@ -4,6 +4,7 @@ module.exports = {
 				name: "rumpeldev",
 				script: "./server.js",
 				watch: true,
+				autorestart: true,
 				env: {
 						"DBUSER":"secret_DBUSER",
 						"DBPASSWORD": "secret_DBPASSWORD",
