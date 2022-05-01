@@ -47,5 +47,5 @@ jobs:
         PORT: ${{ secrets.REMOTE_PORT }}
         USER: ${{ secrets.REMOTE_USER }}
         PRIVATE_SSH_KEY: ${{ secrets.DEPLOY_KEY }}
-        COMMAND: pm2 restart graphql-rumpeldev --update-env
+        COMMAND: ${{ secrets.REMOTE_TARGET_GRAPHQL }}/deploy.sh
         
