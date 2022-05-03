@@ -12,6 +12,7 @@ jobs:
       matrix:
         node-version: [16.x]
     steps:
+      - uses: actions/checkout@v2
       - run: ls
       - name: Prepare dockerfile
         run: sed -i 's/secret_DBUSER/${{ secrets.DBUSER }}/' ./dockerfile
