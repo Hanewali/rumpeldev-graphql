@@ -1,11 +1,8 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
-
 name: GraphQL server deploy
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
 jobs:
@@ -13,46 +10,25 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [16.x]        
+        node-version: [16.x]
     steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - name: Install Dependencies
-      run: npm i
-    - name: Build for production
-      run: npm run build --if-present
-    - name: Prepare config file
-      run: sed -i 's/secret_DBUSER/${{ secrets.DBUSER }}/' ecosystem.config.js
-    - run: sed -i 's/secret_DBPASSWORD/${{ secrets.DBPASSWORD }}/' ecosystem.config.js
-    - run: sed -i 's/secret_DBURL/${{ secrets.DBURL }}/' ecosystem.config.js
-    - run: sed -i 's/secret_DBPORT/${{ secrets.DBPORT }}/' ecosystem.config.js
-    - run: sed -i 's/secret_DBNAME/${{ secrets.DBNAME }}/' ecosystem.config.js
-    - name: Deploy to Mikrus
-      uses: up9cloud/action-rsync@v1.3
-      env:
-        SOURCE: ./
-        HOST: ${{ secrets.REMOTE_HOST }}
-        USER: ${{ secrets.REMOTE_USER }}
-        KEY: ${{ secrets.DEPLOY_KEY }}
-        TARGET: ${{ secrets.REMOTE_TARGET_GRAPHQL }}
-        PORT: ${{ secrets.REMOTE_PORT }}
-    - name: Restart graphql service
-      uses: D3rHase/ssh-command-action@v0.2.1
-      with:
-        HOST: ${{ secrets.REMOTE_HOST }}
-        PORT: ${{ secrets.REMOTE_PORT }}
-        USER: ${{ secrets.REMOTE_USER }}
-        PRIVATE_SSH_KEY: ${{ secrets.DEPLOY_KEY }}
-        COMMAND: chmod +x ${{ secrets.REMOTE_TARGET_GRAPHQL }}/deploy.sh
-    - uses: D3rHase/ssh-command-action@v0.2.1
-      with:
-        HOST: ${{ secrets.REMOTE_HOST }}
-        PORT: ${{ secrets.REMOTE_PORT }}
-        USER: ${{ secrets.REMOTE_USER }}
-        PRIVATE_SSH_KEY: ${{ secrets.DEPLOY_KEY }}
-        COMMAND: ${{ secrets.REMOTE_TARGET_GRAPHQL }}/deploy.sh
-        
+      - name: Prepare dockerfile
+        run: sed -i 's/secret_DBUSER/${{ secrets.DBUSER }}/' dockerfile
+      - run: sed -i 's/secret_DBPASSWORD/${{ secrets.DBPASSWORD }}/' dockerfile
+      - run: sed -i 's/secret_DBURL/${{ secrets.DBURL }}/' dockerfile
+      - run: sed -i 's/secret_DBPORT/${{ secrets.DBPORT }}/' dockerfile
+      - run: sed -i 's/secret_DBNAME/${{ secrets.DBNAME }}/' dockerfile
+      - run: sed -i 's/secret_PORT/${{ secrets.PORT }}/' dockerfile
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and push docker image
+        uses: docker/build-push-action@v2.10.0
+        with:
+          file: ./dockerfile
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/rumpeldev-graphql:latest
