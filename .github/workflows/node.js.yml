@@ -13,7 +13,6 @@ jobs:
         node-version: [16.x]
     steps:
       - uses: actions/checkout@v2
-      - run: ls
       - name: Prepare dockerfile
         run: sed -i 's/secret_DBUSER/${{ secrets.DBUSER }}/' ./dockerfile
       - run: sed -i 's/secret_DBPASSWORD/${{ secrets.DBPASSWORD }}/' ./dockerfile
@@ -21,6 +20,7 @@ jobs:
       - run: sed -i 's/secret_DBPORT/${{ secrets.DBPORT }}/' ./dockerfile
       - run: sed -i 's/secret_DBNAME/${{ secrets.DBNAME }}/' ./dockerfile
       - run: sed -i 's/secret_PORT/${{ secrets.PORT }}/' ./dockerfile
+      - run: cat ./dockerfile
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
       - name: Login to DockerHub
